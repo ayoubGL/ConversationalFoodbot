@@ -1,0 +1,79 @@
+Modalites :
+    - Rate dish proposals (textual)
+    - Rate dish proposal (visual)
+    - Rate dish proposal (visual + label explain )
+	
+    + Rate dish proposal (visual + labels explain + IQ)	
+    + Rate dish proposal (visual quality)
+
+usersGlobalVariables[str(update.callback_query.from_user.id)]["dishToRecommend"].nome : recommended dish.
+
+findMostSimilarAndHealthiest: find the most alternative.
+
+nome: Dish Name
+imgDish : dish image
+
+- recommendationObjectList: final sorted list containing the possible dish to recommend to user
+
+-  userChoiceMacroCategoryGlobal: take into account food macro category the user wants to eat
+
+- tfIdfDishesNames: the names of the recipes stored based on what the user chose
+
+- fiveDishes: the dishes that the user likes
+
+- listDishesLiked: the dishes that the user likes
+
+- dishToRecommend: First element of recommendation list that is shown to user
+
+- Name of recommended recipe line : 1279
+
+- dishes to rate : 739 now
+
+- reply_media_group: 
+
+
+
+- Conversation handler: a handler to hold a conversation with a single or multiple users through Telegram updates by managing three collections of other handlers.
+    --> states: contains the different conversation steps and one or more associated handlers that should be used if the user sends a message when the conversation with them is currently in that state.
+
+    --> 
+
+start (USERCHOICEMODALITY) --> 
+                                userChoiceModality (FUNCALLBACK) [
+                                    callback: callback function for the handler
+                                    pattern: pattern to test against.
+                                ] --> Processuserconstraints(FUNCTCALLBACK2) --->
+                                Afterrecommendation (FinalRatings) --> finalratingS()
+
+callbackqueryhandler : Handler class to handle Telegram.  
+
+MessageHandler: Handle Telegram message. they maight contain text, media, status, updates.
+
+
+
+Choice satisfaction:
+- I like the recipe i have chosen
+- I think i will prepare the recipe i have chosen 
+- the chosen recipe fits my preferences
+- I would recommend the chosen recipe to others
+
+choice difficulty
+- Making a choice was overwhelming
+- It was easy to make this choice
+
+Perceived effort
+- The system takes up a lot of time
+- I quickly understood the functionalities of the system
+- Many actions were required to use the system
+
+
+- One_time_keyboard: requests clients to hide the keyboard as soon as it's been used.
+
+
+- To get answer from the user we use: update.message.from_user.id
+
+-->  usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"] = []
+    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceDifficulty"] = []
+    usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"] = []
+    
+    
