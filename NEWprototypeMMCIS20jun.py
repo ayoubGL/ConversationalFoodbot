@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 #_______________________RETURN CODES (useful for identifying next function to be called)_________
 
-USERCHOICEMODALITY, PROCESSUSERCONSTRAINTS, FIRSTBRANCH, FIRSTBRANCH2, FUNCTCALLBACK2, SECONDBRANCH, SECONDBRANCH2, SECONDBRANCH3, SECONDBRANCH4, PROCESSING, AFTERRECOMMENDATION, CHOICESATISFACTION, CHOICESATISFACTION2,CHOICESATISFACTION3, FINALRATINGS, FUNCTCALLBACK, CHOICEDIFFICULTY, CHOICEDIFFICULTY1, PERCEIVEDEFFORT, PERCEIVEDEFFORT1, PERCEIVEDEFFORT2 = range(21) #removed state: USERCHOICEMACROCATEGORY
+USERCHOICEMODALITY, PROCESSUSERCONSTRAINTS, FIRSTBRANCH, FIRSTBRANCH2, FUNCTCALLBACK2, SECONDBRANCH, SECONDBRANCH2, SECONDBRANCH3, SECONDBRANCH4, PROCESSING, AFTERRECOMMENDATION, CHOICESATISFACTION0,CHOICESATISFACTION, CHOICESATISFACTION2,CHOICESATISFACTION3, FINALRATINGS, FUNCTCALLBACK, CHOICEDIFFICULTY, CHOICEDIFFICULTY1, PERCEIVEDEFFORT, PERCEIVEDEFFORT1  = range(21) #removed state: USERCHOICEMACROCATEGORY
 
 #_______________________GLOBAL VARIABLES_________________________________________________________
 # further step -> we are moving to multi-user scenario, so we need to better handle global variables:
@@ -89,7 +89,7 @@ macroCategNames = {
 #_______________________CLASS DEFINITION_____________________________________________
 
 class Piatto:
-    def __init__(self, numero, nome, ingredienti, immagine, calorie, macroCategoria, servings, totalGramWeight, protein100, carb100, fiber100, sugar100, fat100, satfat100, salt100, kj100, nutri_score, FSAscore, FSAlabel, mediaReviews, numeroReviews, idDishUrl, goodImage):
+    def __init__(self, numero, nome, ingredienti, immagine, calorie, macroCategoria, servings, totalGramWeight, protein100, carb100, fiber100, sugar100, fat100, satfat100, salt100, kj100, nutri_score, FSAscore, FSAlabel, mediaReviews, numeroReviews, idDishUrl, goodImage, qualityImage):
         self.numero = numero
         self.nome = nome
         self.ingredienti = ingredienti
@@ -113,6 +113,7 @@ class Piatto:
         self.numeroReviews = numeroReviews
         self.idDishUrl = idDishUrl
         self.goodImage = goodImage
+        self.qualityImage = qualityImage
         # self.badImage = badImage
 
 #_______________________FUNCTIONS__________________________________________________
@@ -126,10 +127,11 @@ def creaMenu()-> None:
                 # "./source/salad_500_rev_7.csv", 
                 # "./source/dessert_500_rev_7.csv", 
                 # "./source/snack_500_rev_7.csv"]
-                "./source/Attractive_snack.csv",
-                "./source/Attractive_salad.csv", 
-                "./source/Attractive_dessert.csv", 
-                "./source/Attractive_pasta.csv"]
+                "./source/Attractive_snack_new_.csv",
+                "./source/Attractive_salad_new_.csv", 
+                "./source/Attractive_dessert_new_.csv", 
+                "./source/Attractive_pasta_new_.csv"
+                ]
     # , "pasta_high_q.csv", "salad_high_q.csv", "dessert_high_q.csv", "snack_high_q.csv"]
 
     #I add Piatto objects into the menu by getting all rows of all menu files (one for category)
@@ -137,7 +139,7 @@ def creaMenu()-> None:
     line_count = 1 #index of dishes into the menu
     global menu
 
-    #numero, nome, ingredienti, immagine, calorie, macroCategoria, servings, totalGramWeight, protein100, carb100, fiber100, sugar100, fat100, satfat100, salt100, kj100, nutri_score, FSAscore, FSAlabel, mediaReviews, numReviews, idUrlDish, goodImage, badImage
+    #numero, nome, ingredienti, immagine, calorie, macroCategoria, servings, totalGramWeight, protein100, carb100, fiber100, sugar100, fat100, satfat100, salt100, kj100, nutri_score, FSAscore, FSAlabel, mediaReviews, numReviews, idUrlDish, goodImage
     for urlDataset in datasets:
         csv_file = open(urlDataset)
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -151,8 +153,8 @@ def creaMenu()-> None:
             ingrs = [each_string.lower() for each_string in x]
             calor = row[4]
             macroCateg = row[1]
-            # numero, nome, ingredienti, immagine, calorie, macroCategoria, servings, totalGramWeight, protein100, carb100, fiber100, sugar100, fat100, satfat100, salt100, kj100, nutri_score, FSAscore, FSAlabel, mediaReviews, numeroReviews, idUrl, goodim, badIma
-            menu.append(Piatto(line_count, row[3], ingrs, row[2], calor, macroCateg, row[6], row[15], row[17], row[18], row[19], row[20], row[21], row[22], row[25], row[26], row[27], row[28], row[29], row[30], row[31], row[0], row[32], row[33], row[34]))
+            # numero, nome, ingredienti, immagine, calorie, macroCategoria, servings, totalGramWeight, protein100, carb100, fiber100, sugar100, fat100, satfat100, salt100, kj100, nutri_score, FSAscore, FSAlabel, mediaReviews, numeroReviews, idUrl, goodim
+            menu.append(Piatto(line_count, row[3], ingrs, row[2], calor, macroCateg, row[6], row[15], row[17], row[18], row[19], row[20], row[21], row[22], row[25], row[26], row[27], row[28], row[29], row[30], row[31], row[0], row[32], row[33]))
             # if line_count <= 1:
             #     print("------>---->--->", line_count, row[3], ingrs, row[2], calor, macroCateg, row[6], row[15], row[17], row[18], row[19], row[20], row[21], row[22], row[25], row[26], row[27], row[28], row[29], row[30], row[31], row[0], row[32], row[33] )
 
@@ -170,14 +172,14 @@ def returnIndexesByMacroCateg(macroCateg):
         start = 0
         finish = 499#500
     elif macroCateg == "Salad 🥗":
-        start = 500
-        finish = 999#1000
+        start = 0#500
+        finish = 500 #999#1000
     elif macroCateg == "Dessert 🧁":
-        start = 1000
-        finish = 1499#1500
+        start = 0#1000
+        finish = 500 #1499#1500
     elif macroCateg == "Snack 🍟":
-        start = 1500
-        finish = 1999#2000
+        start = 0#1500
+        finish = 500 #1999#2000
 
     return start, finish
 
@@ -186,14 +188,14 @@ def returnIndexesByMacroCateg(macroCateg):
 
 def stampaMenu()-> None:
     for obj in menu:
-        print( obj.numero, obj.nome, obj.ingredienti, obj.immagine, obj.calorie, obj.macroCategoria )
+        print( obj.numero, obj.nome, obj.ingredienti, obj.immagine, obj.calorie, obj.macroCategoria, obj.qualityImage)
 
 
 #FUNC: print generic list passed as parameter (for each element print some attribute)
 
 def stampaLista(lista)-> None:
     for obj in lista:
-        print( obj.numero, obj.nome, obj.ingredienti, obj.immagine, obj.calorie, obj.macroCategoria)
+        print( obj.numero, obj.nome, obj.ingredienti, obj.immagine, obj.calorie, obj.macroCategoria,  obj.qualityImage)
 def retLista(obj):
     return str(obj.numero) + " " + obj.nome + " " + obj.FSAscore + " "+ obj.nutriScore + " " +obj.macroCategoria
 
@@ -286,9 +288,9 @@ def userChoiceModality(update: Update, context: CallbackContext) -> int:
     # 3 for MMLAB
 
 
-    listOfModalities = ["Send your pictures 📸", "Rate dish proposals (textual) ⭐️📝", "Rate dish proposals (visual) ⭐️🍝", "Rate dish proposal (visual+label explain) ✅", "Rate dish proposal (visual quality) 🖼️"]
+    listOfModalities = ["Send your pictures 📸", "Rate dish proposals (textual) ⭐️📝", "Rate dish proposals (visual) ⭐️🍝", "Rate dish proposal (visual+label explain) ✅", "Rate dish proposal (visual quality) 🖼️", "Rate dish proposel (label + visual quality)"]
     # print('number of modalities---', len(listOfModalities))
-    usersGlobalVariables[str(update.message.from_user.id)]["userChoiceModalityGlobal"] = listOfModalities[4]
+    usersGlobalVariables[str(update.message.from_user.id)]["userChoiceModalityGlobal"] = listOfModalities[1]
     #RANDOM import random random.choice(listOfModalities)
     #NOT RANDOM AND NOT FIXED update.message.text
 
@@ -751,7 +753,7 @@ def processUserConstraints(update: Update, context: CallbackContext) -> int:
             if usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (textual) ⭐️📝':
                 usersGlobalVariables[str(update.message.from_user.id)]["flagTextualVisualChoice"] = False #utile dopo, non usato qui
                 update.message.reply_text(nameDish,reply_markup=reply_markupN)
-            elif usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (visual) ⭐️🍝' or usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual+label explain) ✅' or usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual quality) 🖼️':
+            elif usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (visual) ⭐️🍝' or usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual+label explain) ✅' or usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual quality) 🖼️' or usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == "Rate dish proposel (label + visual quality)" :
                 usersGlobalVariables[str(update.message.from_user.id)]["flagTextualVisualChoice"] = True
                 print('-------', imgDish, nameDish, )
                 print('--- Im here in  visual just')
@@ -759,11 +761,15 @@ def processUserConstraints(update: Update, context: CallbackContext) -> int:
                 
                 # update.effective_message.reply_media_group([InputMediaPhoto(open(image,'rb'))])
                 # imgDish = open(image,'rb')
-                update.message.reply_photo(open(imgDish,'rb'),reply_markup=reply_markupN, caption=nameDish)
+                
+                # update.message.reply_photo(open(imgDish,'rb'),reply_markup=reply_markupN, caption=nameDish)
+                
                 # InputMediaPhoto(open(image,'rb'))
                 #,reply_markup=reply_markupN, caption=nameDish)
                 
-
+                ## I change I add to read pic from url
+                
+                update.message.reply_photo(imgDish,reply_markup=reply_markupN, caption=nameDish)
             return FUNCTCALLBACK2
         else:
             print("(ERROR 2) END OF MENU for user ", str(update.message.from_user.id))
@@ -849,9 +855,14 @@ def likeDishN(update, context):
 
             if usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (textual) ⭐️📝':
                 update.effective_message.reply_text(nameDish, reply_markup=reply_markupN)
-            elif usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (visual) ⭐️🍝' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual+label explain) ✅' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == "Rate dish proposal (visual quality) 🖼️":
-                update.effective_message.reply_photo(open(imgDish, 'rb'), reply_markup=reply_markupN, caption=nameDish)
+            elif usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (visual) ⭐️🍝' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual+label explain) ✅' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == "Rate dish proposal (visual quality) 🖼️" or usersGlobalVariables[str(update.callabck_query.from_user.id)]["Rate dish proposel (label + visual quality)"]:
+                
+                ## Another change here
+                update.effective_message.reply_photo(imgDish, reply_markup=reply_markupN, caption=nameDish)
+                # update.effective_message.reply_photo(open(imgDish, 'rb'), reply_markup=reply_markupN, caption=nameDish)
                 # update.message.reply_photo(open(imgDish,'rb'),reply_markup=reply_markupN, caption=nameDish)
+                
+                # update.message.reply_photo(imgDish,reply_markup=reply_markupN, caption=nameDish)
 
             return FUNCTCALLBACK2
         
@@ -908,8 +919,9 @@ def skipDishN(update, context):
 
             if usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (textual) ⭐️📝':
                 update.effective_message.reply_text(nameDish, reply_markup=reply_markupN)
-            elif usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (visual) ⭐️🍝' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual+label explain) ✅' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual quality) 🖼️':
-                update.effective_message.reply_photo(open(imgDish,'rb'), reply_markup=reply_markupN, caption=nameDish)
+            elif usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (visual) ⭐️🍝' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual+label explain) ✅' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual quality) 🖼️' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == "Rate dish proposel (label + visual quality)":
+                # update.effective_message.reply_photo(open(imgDish,'rb'), reply_markup=reply_markupN, caption=nameDish)
+                update.effective_message.reply_photo(imgDish, reply_markup=reply_markupN, caption=nameDish)
 
 
             return FUNCTCALLBACK2
@@ -1327,7 +1339,7 @@ def processing(update: Update, context: CallbackContext) -> int:
             update.effective_message.reply_text(raccHealthierNome, reply_markup=ReplyKeyboardRemove())
             update.effective_message.reply_media_group([InputMediaPhoto(mostSimAndHeal.immagine),InputMediaPhoto(open("./" + str(mostSimAndHeal.FSAlabel), 'rb'))])
         
-    
+
     
     
         elif usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceModalityGlobal"] == 'Rate dish proposals (visual) ⭐️🍝':
@@ -1341,7 +1353,7 @@ def processing(update: Update, context: CallbackContext) -> int:
         # my other code 
         elif usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceModalityGlobal"] == 'Rate dish proposal (visual quality) 🖼️': # visually appealing alternative
             
-            print('Im here in this conditin right now ---- Quality explain----->')
+            print('Im here in this conditin right now ---- Good quality image + explanation ----->')
             
             
                 # ### --- the image of the recommended recipes ----------------
@@ -1353,14 +1365,14 @@ def processing(update: Update, context: CallbackContext) -> int:
             
             # SCEN 4 multi-modal (dish name + image + label for expl) or MMQality
             # print(InputMediaPhoto(usersGlobalVariables[str(update.callback_query.from_user.id)]["dishToRecommend"].immagine))
-            update.effective_message.reply_media_group(media=[InputMediaPhoto(open(usersGlobalVariables[str(update.callback_query.from_user.id)]["dishToRecommend"].immagine,'rb'))])
+            update.effective_message.reply_media_group(media=[InputMediaPhoto(usersGlobalVariables[str(update.callback_query.from_user.id)]["dishToRecommend"].immagine)])
             raccHealthierNome = 'But I also propose to you a healthier alternative: ' + mostSimAndHeal.nome  # BUT I PROPOSE YOU ALSO AN HEARTIER ALTERNATIVE
             update.effective_message.reply_text(raccHealthierNome, reply_markup=ReplyKeyboardRemove())
             print('Healthier Alternative',mostSimAndHeal.nome )
             
-            # mostSimAndHeal 
+            # mostSimAndHeal  obj.goodImage
             
-            update.effective_message.reply_media_group([InputMediaPhoto(open(mostSimAndHeal.immagine,'rb'))])
+            update.effective_message.reply_media_group([InputMediaPhoto(open(mostSimAndHeal.qualityImage,'rb'))])
         
         
         # my other code 
@@ -1590,17 +1602,29 @@ def afterRecommendation(update: Update, context: CallbackContext) -> int:
         usersGlobalVariables[str(update.message.from_user.id)]["isUserFinalChoiceHealthy"] = False
         usersGlobalVariables[str(update.message.from_user.id)]["finishPresentationDate"] = update.message.date
 
-        update.message.reply_text('Thanks you for using this bot!, Your will recieve a 9 questions that will help us improve the system \n \n \n' ,reply_markup=ReplyKeyboardRemove(), parse_mode = ParseMode.HTML)
+        # update.message.reply_text('Thank you for using this bot!, Your will recieve a 9 questions that will help us improve the system \n \n \n' ,reply_markup=ReplyKeyboardRemove())
+        update.message.reply_text('Your will recieve a 9 questions that will help us improve the system', reply_markup=ReplyKeyboardRemove())
+
+        
+
+
 
         reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
-        update.message.reply_text('<b> Q1:<u> I like the recipe i have chosen?</u> </b>',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True), parse_mode = ParseMode.HTML)
-        
-       
-        
-        # choicesatisfaction_1(update, context)
+    # Thank you for using this bot!, Your will recieve a 9 questions that will help us improve the system
+    
+        q = '<b> Q1:<u>I like the recipe I have chosen?</u></b>'
 
-        return CHOICESATISFACTION
-           
+    
+    
+
+    #     userResponse = update.message.text
+        usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
+        
+        update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False),  parse_mode = ParseMode.HTML)
+        
+
+        return CHOICESATISFACTION0
+
 
     elif userResponse == 'I like second dish':
 
@@ -1609,14 +1633,27 @@ def afterRecommendation(update: Update, context: CallbackContext) -> int:
         usersGlobalVariables[str(update.message.from_user.id)]["isUserFinalChoiceHealthy"] = True
         usersGlobalVariables[str(update.message.from_user.id)]["finishPresentationDate"] = update.message.date
 
-        update.message.reply_text('Thanks you for using this bot!', reply_markup=ReplyKeyboardRemove())
+        update.message.reply_text('Your will recieve a 9 questions that will help us improve the system', reply_markup=ReplyKeyboardRemove())
 
-        reply_keyboard = [['1️⃣'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣']]
-        update.message.reply_text('Please rate our service! Then you will receive a code',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
-        # update.message.reply_text('I like the recipe I have chosen',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
+        
 
-        return FINALRATINGS
-        # return FUNCTCALLBACK
+
+
+        reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
+    # Thank you for using this bot!, Your will recieve a 9 questions that will help us improve the system
+    
+        q = '<b> Q1:<u>I like the recipe I have chosen?</u></b>'
+
+    
+    
+
+    #     userResponse = update.message.text
+        usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
+        
+        update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False),  parse_mode = ParseMode.HTML)
+        
+
+        return CHOICESATISFACTION0
 
     elif userResponse == 'I want something different...':
         usersGlobalVariables[str(update.message.from_user.id)]["nextInd"]+=1
@@ -1673,7 +1710,7 @@ def afterRecommendation(update: Update, context: CallbackContext) -> int:
                     listIngrToShow.append(elem)
 
             if len(listIngrToShow) > 0:
-                messIngrLiked = 'The first dish I proposed contains ingredients that you might like: ' + ", ".join([x.lower() for x in listIngrToShow])
+                messIngrLiked = 'The first dish I proposed contains ingredients that you might like:' + ", ".join([x.lower() for x in listIngrToShow])
                 update.message.reply_text(messIngrLiked)
 
             # numero, nome, ingredienti, immagine, calorie, macroCategoria, servings, totalGramWeight, protein100, carb100, fiber100, sugar100, fat100, satfat100, salt100, kj100, nutri_score, FSAscore, FSAlabel
@@ -1733,32 +1770,81 @@ def afterRecommendation(update: Update, context: CallbackContext) -> int:
             
             print("going to final ratings")
             
-            return CHOICESATISFACTION
+            return FINALRATINGS#CHOICESATISFACTION
+
+def choicesatisfaction_0(update: Update, context:CallbackContext) -> int:
+
+    global usersGlobalVariables
+    userResponse = update.message.text
+
+
+
+    # usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
+
+    # reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
+    # # Thank you for using this bot!, Your will recieve a 9 questions that will help us improve the system
+    
+    # q = '<b> Q1:<u>I like the recipe I have chosen?</u></b>'
+
+    
+    
+    if userResponse == '1️⃣ (Strongly Disagree)':
+        numResponse = '1'
+    elif userResponse == '2️⃣':
+        numResponse = '2'
+    elif userResponse == '3️⃣':
+        numResponse = '3'
+    elif userResponse == '4️⃣':
+        numResponse = '4'
+    elif userResponse == '5️⃣ (Strongly Agree)':
+        numResponse = '5'
+        
+    print('0--------0',userResponse)    
+    
+    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"].append(numResponse)
+    
+   
+   
+    reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
+    q = '<b> Q2:<u> I think i will prepare the recipe i have chosen?</u></b>'
+
+    
+    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False),  parse_mode = ParseMode.HTML)
+
+
+
+    return CHOICESATISFACTION
 
 def choicesatisfaction_1(update: Update, context:CallbackContext) -> int:
 
     global usersGlobalVariables
     userResponse = update.message.text
 
-    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"].append(userResponse)
-    
-    # usersGlobalVariables[str(update.message.from_user.id)]["ChoiceDifficulty"] = []
-    # usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"] = []
-    
-    
-
-    print(usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"])
 
 
     usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
-    # usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = 0
-    # usersGlobalVariables[str(update.message.from_user.id)]["startSessionDate"] = update.message.date
 
-    reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
-    q = 'I think i will prepare the recipe i have chosen?'
-
+   
     
-    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False))
+    
+    if userResponse == '1️⃣ (Strongly Disagree)':
+        numResponse = '1'
+    elif userResponse == '2️⃣':
+        numResponse = '2'
+    elif userResponse == '3️⃣':
+        numResponse = '3'
+    elif userResponse == '4️⃣':
+        numResponse = '4'
+    elif userResponse == '5️⃣ (Strongly Agree)':
+        numResponse = '5'
+    
+    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"].append(numResponse)
+    
+    reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
+    q = "<b> Q3:<u> The chosen recipe fits my preferences?</u></b>"
+   
+
+    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False),  parse_mode = ParseMode.HTML)
 
 
     return CHOICESATISFACTION2
@@ -1770,16 +1856,33 @@ def choicesatisfaction_2(update: Update, context:CallbackContext) -> int:
     userResponse = update.message.text
 
 
-    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"].append(userResponse)
+   
 
 
     usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
 
+   
+
+
+    if userResponse == '1️⃣ (Strongly Disagree)':
+        numResponse = '1'
+    elif userResponse == '2️⃣':
+        numResponse = '2'
+    elif userResponse == '3️⃣':
+        numResponse = '3'
+    elif userResponse == '4️⃣':
+        numResponse = '4'
+    elif userResponse == '5️⃣ (Strongly Agree)':
+        numResponse = '5'
+    
+    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"].append(numResponse)
+    
     reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
-    q = "The chosen recipe fits my preferences?"
+    q = '<b> Q4:<u> I would recommend the chosen recipe to others?</u></b>'
 
     
-    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False))
+    
+    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False), parse_mode = ParseMode.HTML)
    
    
             
@@ -1791,17 +1894,32 @@ def choicesatisfaction_3(update: Update, context:CallbackContext) -> int:
     userResponse = update.message.text
 
 
-    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"].append(userResponse)
+    # usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"].append(userResponse)
 
 
     usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
 
-    reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
-    q2 = 'I would recommend the chosen recipe to others?'
-
+   
     
-    update.message.reply_text(q2, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False))
+    if userResponse == '1️⃣ (Strongly Disagree)':
+        numResponse = '1'
+    elif userResponse == '2️⃣':
+        numResponse = '2'
+    elif userResponse == '3️⃣':
+        numResponse = '3'
+    elif userResponse == '4️⃣':
+        numResponse = '4'
+    elif userResponse == '5️⃣ (Strongly Agree)':
+        numResponse = '5'
+    
+    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"].append(numResponse)
+    
+    
+    reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
+    q = '<b> Q5:<u> Making a choice was overwhelming?</u></b>'
+   
 
+    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False),  parse_mode = ParseMode.HTML)
 
     return CHOICEDIFFICULTY
 
@@ -1810,17 +1928,32 @@ def choice_difficuly(update: Update, context: CallbackContext) -> int:
     userResponse = update.message.text
 
 
-    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"].append(userResponse)
+    # usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"].append(userResponse)
 
 
     usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
 
-    reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
-    q = 'Making a choice was overwhelming?'
     
 
+    if userResponse == '1️⃣ (Strongly Disagree)':
+        numResponse = '1'
+    elif userResponse == '2️⃣':
+        numResponse = '2'
+    elif userResponse == '3️⃣':
+        numResponse = '3'
+    elif userResponse == '4️⃣':
+        numResponse = '4'
+    elif userResponse == '5️⃣ (Strongly Agree)':
+        numResponse = '5'
     
-    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False))
+
+    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceDifficulty"].append(numResponse)
+    
+    reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
+    q = '<b> Q6:<u>It was easy to make this choice?</u></b>'
+    
+
+    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False),  parse_mode = ParseMode.HTML)
     
     return CHOICEDIFFICULTY1
 
@@ -1829,17 +1962,31 @@ def choice_difficuly1(update: Update, context: CallbackContext) -> int:
     userResponse = update.message.text
 
 
-    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceDifficulty"].append(userResponse)
+    # usersGlobalVariables[str(update.message.from_user.id)]["ChoiceDifficulty"].append(userResponse)
 
 
     usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
 
-    reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
-    q = 'It was easy to make this choice?'
     
 
+
+    if userResponse == '1️⃣ (Strongly Disagree)':
+        numResponse = '1'
+    elif userResponse == '2️⃣':
+        numResponse = '2'
+    elif userResponse == '3️⃣':
+        numResponse = '3'
+    elif userResponse == '4️⃣':
+        numResponse = '4'
+    elif userResponse == '5️⃣ (Strongly Agree)':
+        numResponse = '5'
     
-    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False))
+    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceDifficulty"].append(numResponse)
+    
+    reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
+    q = '<b>Q7:<u>The Systemt takes up a lot of time?</u></b>'
+    
+    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False),  parse_mode = ParseMode.HTML)
     
     return PERCEIVEDEFFORT
 
@@ -1849,17 +1996,31 @@ def perceived_effort(update: Update, context: CallbackContext) -> int:
     userResponse = update.message.text
 
 
-    usersGlobalVariables[str(update.message.from_user.id)]["ChoiceDifficulty"].append(userResponse)
+    # usersGlobalVariables[str(update.message.from_user.id)]["ChoiceDifficulty"].append(userResponse)
 
 
     usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
 
-    reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
-    q = 'The Systemt takes up a lot of time?'
-    
 
     
-    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False))
+
+    if userResponse == '1️⃣ (Strongly Disagree)':
+        numResponse = '1'
+    elif userResponse == '2️⃣':
+        numResponse = '2'
+    elif userResponse == '3️⃣':
+        numResponse = '3'
+    elif userResponse == '4️⃣':
+        numResponse = '4'
+    elif userResponse == '5️⃣ (Strongly Agree)':
+        numResponse = '5'
+    
+    usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"].append(numResponse)
+        
+    reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
+    q = '<b>Q8:<u>I quickly understood the functanalities of the systems?</u></b>'
+    
+    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False),  parse_mode = ParseMode.HTML)
     
     return PERCEIVEDEFFORT1
 
@@ -1868,38 +2029,67 @@ def perceived_effort1(update: Update, context: CallbackContext) -> int:
     userResponse = update.message.text
 
 
-    usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"].append(userResponse)
+    # usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"].append(userResponse)
 
 
     usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
 
+
+    
+
+    
+    if userResponse == '1️⃣ (Strongly Disagree)':
+        numResponse = '1'
+    elif userResponse == '2️⃣':
+        numResponse = '2'
+    elif userResponse == '3️⃣':
+        numResponse = '3'
+    elif userResponse == '4️⃣':
+        numResponse = '4'
+    elif userResponse == '5️⃣ (Strongly Agree)':
+        numResponse = '5'
+    
+    usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"].append(numResponse)
+    
     reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
-    q = 'I quickly understood the functanalities of the systems?'
+    q = '<b>Q9:<u>Many actions were required to use the system?</u></b>'
     
-
+    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False),  parse_mode = ParseMode.HTML)
     
-    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False))
+    print('......', numResponse, userResponse)
     
-    return PERCEIVEDEFFORT2
-
-def perceived_effort2(update: Update, context: CallbackContext) -> int:
-    global usersGlobalVariables
-    userResponse = update.message.text
-
-
-    usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"].append(userResponse)
-
-
-    usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
-
-    reply_keyboard = [['1️⃣ (Strongly Disagree)'], ['2️⃣'], ['3️⃣'], ['4️⃣'], ['5️⃣ (Strongly Agree)']]
-    q = 'Many actions were required to use the system?'
-    
-
-    
-    update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False))
     
     return FINALRATINGS
+
+# def perceived_effort2(update: Update, context: CallbackContext) -> int:
+#     global usersGlobalVariables
+#     userResponse = update.message.text
+
+
+#     # usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"].append(userResponse)
+
+
+#     usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
+
+
+    
+
+#     if userResponse == '1️⃣ (Strongly Disagree)':
+#         numResponse = '1'
+#     elif userResponse == '2️⃣':
+#         numResponse = '2'
+#     elif userResponse == '3️⃣':
+#         numResponse = '3'
+#     elif userResponse == '4️⃣':
+#         numResponse = '4'
+#     elif userResponse == '5️⃣ (Strongly Agree)':
+#         numResponse = '5'
+    
+#     usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"].append(numResponse)
+    
+#     update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False),  parse_mode = ParseMode.HTML)
+    
+#     return FINALRATINGS
 
 
 
@@ -2000,13 +2190,20 @@ def finalRatings(update: Update, context: CallbackContext) -> int:
     
     global usersGlobalVariables
     userResponse = update.message.text
-    usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"].append(userResponse)
+  
 
-    # print(usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"])
-
-
-    print('----> The user response is here', update.message.from_user.id,usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"],usersGlobalVariables[str(update.message.from_user.id)]["ChoiceDifficulty"], usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"]  )
-
+    if userResponse == '1️⃣ (Strongly Disagree)':
+        numResponse = '1'
+    elif userResponse == '2️⃣':
+        numResponse = '2'
+    elif userResponse == '3️⃣':
+        numResponse = '3'
+    elif userResponse == '4️⃣':
+        numResponse = '4'
+    elif userResponse == '5️⃣ (Strongly Agree)':
+        numResponse = '5'
+        
+    usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"].append(numResponse)
 
     usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
 
@@ -2027,7 +2224,7 @@ def finalRatings(update: Update, context: CallbackContext) -> int:
         scenario = 'Scenario Multi-modal (Text + Image + Label expl.)' #'Scenario 4'
         tinyScenario = 'MMLAB'
     elif usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual quality) 🖼️':
-        scenario = 'Scenario Multi-modal (Text + High Image + Label expl.)' #'Scenario 4'
+        scenario = 'Scenario Multi-modal (Text + High Image )' #'Scenario 5'
         tinyScenario = 'MMQLAB'
     # Scenario 1 - 5 stars
     rateUser = update.message.text
@@ -2120,6 +2317,8 @@ def finalRatings(update: Update, context: CallbackContext) -> int:
     if nLikes == 5:
         lineaDaInserire = [update.message.from_user.id,codeMturk,dt_string,scenario,macroCatChoice,rateUserToSys,durataConversazione,durataInteraction,durataPresentation,numeroTurni,healthyChoice,healthinessPreferredDishNutri,healthinessPreferredDishFSA,idPreferredDish,','.join(str(elem) for elem in constraintsUser),urlDishesLiked[0],urlDishesLiked[1],urlDishesLiked[2],urlDishesLiked[3],urlDishesLiked[4], nSkips, nLikes, urlDishesShownToUser, urlDishesPairwiseRecommendation, finalDishNotChosen]
         
+        
+        
         userEvaluAnswer = [
             update.message.from_user.id, 
             usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"][0],
@@ -2143,7 +2342,7 @@ def finalRatings(update: Update, context: CallbackContext) -> int:
             usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"][0],
             usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"][1],
             usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"][2],
-            usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"][3],
+             usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"][3],
             
             usersGlobalVariables[str(update.message.from_user.id)]["ChoiceDifficulty"][0], 
             usersGlobalVariables[str(update.message.from_user.id)]["ChoiceDifficulty"][1], 
@@ -2259,6 +2458,7 @@ def main() -> None:
             # PROCESSING: [MessageHandler(Filters.photo | Filters.text | Filters.command, processing), CommandHandler('skip', skipSendingImages)],
             AFTERRECOMMENDATION: [MessageHandler(Filters.text, afterRecommendation)],
 
+            CHOICESATISFACTION0: [MessageHandler(Filters.text,choicesatisfaction_0)],
             CHOICESATISFACTION: [MessageHandler(Filters.text,choicesatisfaction_1)],
             CHOICESATISFACTION2: [MessageHandler(Filters.text, choicesatisfaction_2)],
             CHOICESATISFACTION3: [MessageHandler(Filters.text, choicesatisfaction_3)],
@@ -2266,7 +2466,7 @@ def main() -> None:
             CHOICEDIFFICULTY1: [MessageHandler(Filters.text, choice_difficuly1)],
             PERCEIVEDEFFORT: [MessageHandler(Filters.text, perceived_effort)],
             PERCEIVEDEFFORT1: [MessageHandler(Filters.text, perceived_effort1)],
-            PERCEIVEDEFFORT2: [MessageHandler(Filters.text, perceived_effort2)],
+            # PERCEIVEDEFFORT2: [MessageHandler(Filters.text, perceived_effort2)],
             
             # CHOICESATISFACTION4: [MessageHandler(Filters.text, choicesatisfaction_4)],
             FINALRATINGS: [MessageHandler(Filters.text, finalRatings)]
