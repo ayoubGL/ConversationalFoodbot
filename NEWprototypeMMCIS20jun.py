@@ -145,7 +145,7 @@ def creaMenu()-> None:
         csv_reader = csv.reader(csv_file, delimiter=',')
 
         for row in csv_reader:
-            print('------>', row)
+            # print('------>', row)
             x = row[5]
             # print('------',x)
             x = x.split(',')
@@ -287,10 +287,13 @@ def userChoiceModality(update: Update, context: CallbackContext) -> int:
     # 2 for MM,
     # 3 for MMLAB
 
+    ## modalaties
+    
+    # rate dish proposel (label+ visual quality) : labels and good quality images
 
     listOfModalities = ["Send your pictures 📸", "Rate dish proposals (textual) ⭐️📝", "Rate dish proposals (visual) ⭐️🍝", "Rate dish proposal (visual+label explain) ✅", "Rate dish proposal (visual quality) 🖼️", "Rate dish proposel (label + visual quality)"]
     # print('number of modalities---', len(listOfModalities))
-    usersGlobalVariables[str(update.message.from_user.id)]["userChoiceModalityGlobal"] = listOfModalities[1]
+    usersGlobalVariables[str(update.message.from_user.id)]["userChoiceModalityGlobal"] = listOfModalities[5]
     #RANDOM import random random.choice(listOfModalities)
     #NOT RANDOM AND NOT FIXED update.message.text
 
@@ -316,7 +319,7 @@ def userChoiceModality(update: Update, context: CallbackContext) -> int:
         'Are you intolerant to something or you have any diseases? Please tap on them if you have any. \nClick on (Done) button to continue\n',
         reply_markup=reply_markup
     )
-    print("-- Functcallback------>", FUNCTCALLBACK)
+    # print("-- Functcallback------>", FUNCTCALLBACK)
     return FUNCTCALLBACK
 
 
@@ -551,7 +554,7 @@ def six(update, context):
 
 def processUserConstraints(update: Update, context: CallbackContext) -> int:
 
-    print('------ phase 3 -------')
+    # print('------ phase 3 -------')
 
     global usersGlobalVariables
     usersGlobalVariables[str(update.message.from_user.id)]["flagSkippedAl"] = False
@@ -724,7 +727,7 @@ def processUserConstraints(update: Update, context: CallbackContext) -> int:
 
         if usersGlobalVariables[str(update.message.from_user.id)]["dishesToShow"] > 5:
             
-            print('----dishes to Show --',usersGlobalVariables[str(update.message.from_user.id)]["dishesToShow"])
+            # print('----dishes to Show --',usersGlobalVariables[str(update.message.from_user.id)]["dishesToShow"])
             
             update.message.reply_text('From now I will show to you some dishes. Tap on like if you like a dish! Tap on skip otherwise. \n\nI need 5 preferences...', reply_markup=ReplyKeyboardRemove())
             usersGlobalVariables[str(update.message.from_user.id)]["startPreferenceElicitationDate"] = update.message.date
@@ -735,7 +738,7 @@ def processUserConstraints(update: Update, context: CallbackContext) -> int:
             
             imgDish = usersGlobalVariables[str(update.message.from_user.id)]["menuAfterConstraintsCheck"][usersGlobalVariables[str(update.message.from_user.id)]["counterDishesPrefElic"]-1].immagine
 
-            print("---- Image ___",imgDish)
+            # print("---- Image ___",imgDish)
 
 
             usersGlobalVariables[str(update.message.from_user.id)]["listaDishesLiked"] = []
@@ -744,30 +747,20 @@ def processUserConstraints(update: Update, context: CallbackContext) -> int:
 
             usersGlobalVariables[str(update.message.from_user.id)]["listaDishesShown"].append(usersGlobalVariables[str(update.message.from_user.id)]["menuAfterConstraintsCheck"][usersGlobalVariables[str(update.message.from_user.id)]["counterDishesPrefElic"]-1].idDishUrl)
 
-            print("global variables --->",usersGlobalVariables[str(update.message.from_user.id)]["listaDishesLiked"])
+            # print("global variables --->",usersGlobalVariables[str(update.message.from_user.id)]["listaDishesLiked"])
 
              # dish to rate 
              
-            print('-----dishes to rate')  
+            # print('-----dishes to rate')  
 
             if usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (textual) ⭐️📝':
                 usersGlobalVariables[str(update.message.from_user.id)]["flagTextualVisualChoice"] = False #utile dopo, non usato qui
                 update.message.reply_text(nameDish,reply_markup=reply_markupN)
             elif usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (visual) ⭐️🍝' or usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual+label explain) ✅' or usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual quality) 🖼️' or usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == "Rate dish proposel (label + visual quality)" :
                 usersGlobalVariables[str(update.message.from_user.id)]["flagTextualVisualChoice"] = True
-                print('-------', imgDish, nameDish, )
-                print('--- Im here in  visual just')
-                
-                
-                # update.effective_message.reply_media_group([InputMediaPhoto(open(image,'rb'))])
-                # imgDish = open(image,'rb')
-                
-                # update.message.reply_photo(open(imgDish,'rb'),reply_markup=reply_markupN, caption=nameDish)
-                
-                # InputMediaPhoto(open(image,'rb'))
-                #,reply_markup=reply_markupN, caption=nameDish)
-                
-                ## I change I add to read pic from url
+
+
+
                 
                 update.message.reply_photo(imgDish,reply_markup=reply_markupN, caption=nameDish)
             return FUNCTCALLBACK2
@@ -855,7 +848,7 @@ def likeDishN(update, context):
 
             if usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (textual) ⭐️📝':
                 update.effective_message.reply_text(nameDish, reply_markup=reply_markupN)
-            elif usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (visual) ⭐️🍝' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual+label explain) ✅' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == "Rate dish proposal (visual quality) 🖼️" or usersGlobalVariables[str(update.callabck_query.from_user.id)]["Rate dish proposel (label + visual quality)"]:
+            elif usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (visual) ⭐️🍝' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual+label explain) ✅' or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == "Rate dish proposal (visual quality) 🖼️" or usersGlobalVariables[str(update.callback_query.from_user.id)]["firstUserChoice"] == "Rate dish proposel (label + visual quality)":
                 
                 ## Another change here
                 update.effective_message.reply_photo(imgDish, reply_markup=reply_markupN, caption=nameDish)
@@ -1109,7 +1102,7 @@ def processing(update: Update, context: CallbackContext) -> int:
 
     start,finish = returnIndexesByMacroCateg(usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceMacroCategoryGlobal"])
 
-    print('----- Start and Finish', start, finish)
+    # print('----- Start and Finish', start, finish)
     # print('--- list of tuples', listOfTuples)
 
     if usersGlobalVariables[str(update.callback_query.from_user.id)]["flagEmergencyRecommendation"] is True:
@@ -1321,7 +1314,7 @@ def processing(update: Update, context: CallbackContext) -> int:
 
         # NEW
         if usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceModalityGlobal"] == 'Rate dish proposal (visual+label explain) ✅':
-            print('Im here in this conditin right now ---- Label and explan----->')
+            # print('Im here in this conditin right now ---- Label and explan----->')
             # ### --- the image of the recommended recipes ----------------
             # # SCEN 4 multi-modal (dish name + image + label for expl) or MMLAB
             # image = "./attractive_snacks/Best Ever Jalapeno Poppers.jpg"
@@ -1368,24 +1361,25 @@ def processing(update: Update, context: CallbackContext) -> int:
             update.effective_message.reply_media_group(media=[InputMediaPhoto(usersGlobalVariables[str(update.callback_query.from_user.id)]["dishToRecommend"].immagine)])
             raccHealthierNome = 'But I also propose to you a healthier alternative: ' + mostSimAndHeal.nome  # BUT I PROPOSE YOU ALSO AN HEARTIER ALTERNATIVE
             update.effective_message.reply_text(raccHealthierNome, reply_markup=ReplyKeyboardRemove())
-            print('Healthier Alternative',mostSimAndHeal.nome )
+            # print('Healthier Alternative',mostSimAndHeal.nome )
             
             # mostSimAndHeal  obj.goodImage
             
             update.effective_message.reply_media_group([InputMediaPhoto(open(mostSimAndHeal.qualityImage,'rb'))])
         
         
-        # my other code 
-        elif usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceModalityGlobal"] == 'Rate dish proposal (label + visual quality) 🖼️':
+    
             
-            
-            
-            # SCEN 4 multi-modal (dish name + image + label for expl) or MMQality
-            # print(InputMediaPhoto(usersGlobalVariables[str(update.callback_query.from_user.id)]["dishToRecommend"].immagine))
+        elif usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceModalityGlobal"] == "Rate dish proposel (label + visual quality)":
             update.effective_message.reply_media_group(media=[InputMediaPhoto(usersGlobalVariables[str(update.callback_query.from_user.id)]["dishToRecommend"].immagine),InputMediaPhoto(open("./" + str(usersGlobalVariables[str(update.callback_query.from_user.id)]["dishToRecommend"].FSAlabel), 'rb'))])
             raccHealthierNome = 'But I also propose to you a healthier alternative: ' + mostSimAndHeal.nome  # BUT I PROPOSE YOU ALSO AN HEARTIER ALTERNATIVE
             update.effective_message.reply_text(raccHealthierNome, reply_markup=ReplyKeyboardRemove())
-            update.effective_message.reply_media_group([InputMediaPhoto(mostSimAndHeal.immagine),InputMediaPhoto(open("./" + str(mostSimAndHeal.FSAlabel), 'rb'))])
+            
+            update.effective_message.reply_media_group([InputMediaPhoto(open(mostSimAndHeal.qualityImage,'rb')),InputMediaPhoto(open("./" + str(mostSimAndHeal.FSAlabel), 'rb'))])
+            
+            # [InputMediaPhoto(open(mostSimAndHeal.qualityImage,'rb'))]
+        
+        
         else:
             # SCEN 3 - multi-modal (dish name + image) or MM
             raccHealthierNome = 'But I also propose to you a healthier alternative: ' + mostSimAndHeal.nome  # BUT I PROPOSE YOU ALSO AN HEARTIER ALTERNATIVE
@@ -1411,6 +1405,13 @@ def processing(update: Update, context: CallbackContext) -> int:
     if usersGlobalVariables[str(update.callback_query.from_user.id)]["flagSkippedAl"] == False or usersGlobalVariables[str(update.callback_query.from_user.id)]["boolFirstConstr"] == True:
         messDis = 'I reccomend these ' + str(macroCategNames[usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceMacroCategoryGlobal"]]).lower() + ' dishes because I know that you have diet constraints due to: ' + ", ".join([x.lower() for x in usersGlobalVariables[str(update.callback_query.from_user.id)]["memoryConstraints"]])
         update.effective_message.reply_text(messDis)
+    
+    # my code
+    elif usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceModalityGlobal"] == 'Rate dish proposal (visual+label explain) ✅':
+        macr = ""
+        # update.effective_message.reply_text(macr)
+    elif usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceModalityGlobal"] == 'Rate dish proposel (label + visual quality)':
+        macr = ""
     else:
         macr = 'I recommend these dishes because I know that you are searching for ' + str(macroCategNames[usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceMacroCategoryGlobal"]]).lower()
         update.effective_message.reply_text(macr)
@@ -1419,8 +1420,15 @@ def processing(update: Update, context: CallbackContext) -> int:
     for elem in usersGlobalVariables[str(update.callback_query.from_user.id)]["dishToRecommend"].ingredienti:
         if elem in usersGlobalVariables[str(update.callback_query.from_user.id)]["ingrTfIdfOverTresholdWithSpaces"]:
             listIngrToShow.append(elem)
-
-    if len(listIngrToShow) > 0:
+    
+    # my code
+    if usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceModalityGlobal"] == 'Rate dish proposal (visual+label explain) ✅' and len(listIngrToShow) > 0:
+        messIngrLiked = ""
+        # update.effective_message.reply_text(messIngrLiked)
+    elif usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceModalityGlobal"] == 'Rate dish proposel (label + visual quality)' and len(listIngrToShow) > 0:
+        messIngrLiked = ""
+    
+    elif len(listIngrToShow) > 0:
         messIngrLiked = 'The first dish I proposed contains ingredients that you might like: ' + ", ".join([x.lower() for x in listIngrToShow])
         update.effective_message.reply_text(messIngrLiked)
 
@@ -1428,7 +1436,8 @@ def processing(update: Update, context: CallbackContext) -> int:
 
     if usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceModalityGlobal"] == 'Rate dish proposal (visual+label explain) ✅':
         # SCEN 4 - multi-modal (dish name + image + label for explan)
-
+        update.effective_message.reply_text("You can look at the nutritional labels of first and second dish!",reply_markup=ReplyKeyboardRemove())
+    elif usersGlobalVariables[str(update.callback_query.from_user.id)]["userChoiceModalityGlobal"] == 'Rate dish proposel (label + visual quality)':
         update.effective_message.reply_text("You can look at the nutritional labels of first and second dish!",reply_markup=ReplyKeyboardRemove())
     else:
         kcalA = usersGlobalVariables[str(update.callback_query.from_user.id)]["dishToRecommend"].calorie
@@ -1589,7 +1598,7 @@ def afterRecommendation(update: Update, context: CallbackContext) -> int:
     userResponse = update.message.text
 
 
-    print(usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"])
+    # print(usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"])
 
 
     usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
@@ -1799,7 +1808,7 @@ def choicesatisfaction_0(update: Update, context:CallbackContext) -> int:
     elif userResponse == '5️⃣ (Strongly Agree)':
         numResponse = '5'
         
-    print('0--------0',userResponse)    
+    # print('0--------0',userResponse)    
     
     usersGlobalVariables[str(update.message.from_user.id)]["ChoiceSatisfact"].append(numResponse)
     
@@ -2061,36 +2070,6 @@ def perceived_effort1(update: Update, context: CallbackContext) -> int:
     
     return FINALRATINGS
 
-# def perceived_effort2(update: Update, context: CallbackContext) -> int:
-#     global usersGlobalVariables
-#     userResponse = update.message.text
-
-
-#     # usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"].append(userResponse)
-
-
-#     usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] = usersGlobalVariables[str(update.message.from_user.id)]["counterInteractionTurns"] + 1
-
-
-    
-
-#     if userResponse == '1️⃣ (Strongly Disagree)':
-#         numResponse = '1'
-#     elif userResponse == '2️⃣':
-#         numResponse = '2'
-#     elif userResponse == '3️⃣':
-#         numResponse = '3'
-#     elif userResponse == '4️⃣':
-#         numResponse = '4'
-#     elif userResponse == '5️⃣ (Strongly Agree)':
-#         numResponse = '5'
-    
-#     usersGlobalVariables[str(update.message.from_user.id)]["PerceivedEffort"].append(numResponse)
-    
-#     update.message.reply_text(q, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=False),  parse_mode = ParseMode.HTML)
-    
-#     return FINALRATINGS
-
 
 
 
@@ -2218,14 +2197,16 @@ def finalRatings(update: Update, context: CallbackContext) -> int:
         scenario = 'Scenario Textual' #'Scenario 1'
         tinyScenario = 'TEXT'
     elif usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposals (visual) ⭐️🍝':
-        scenario = 'Scenario Multi-modal (Text + Image)' #'Scenario 3'
+        scenario = 'Scenario Multi-modal (Text + Normal Image)' #'Scenario 3'
         tinyScenario = 'MM'
     elif usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual+label explain) ✅':
-        scenario = 'Scenario Multi-modal (Text + Image + Label expl.)' #'Scenario 4'
+        scenario = 'Scenario Multi-modal (Image + Normal Label)' #'Scenario 4'
         tinyScenario = 'MMLAB'
     elif usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposal (visual quality) 🖼️':
-        scenario = 'Scenario Multi-modal (Text + High Image )' #'Scenario 5'
+        scenario = 'Scenario Multi-modal (Text + High Image)' #'Scenario 5'
         tinyScenario = 'MMQLAB'
+    elif usersGlobalVariables[str(update.message.from_user.id)]["firstUserChoice"] == 'Rate dish proposel (label + visual quality)':
+        scenario = "Scenario Multi-modal (label + High Image)"
     # Scenario 1 - 5 stars
     rateUser = update.message.text
 
