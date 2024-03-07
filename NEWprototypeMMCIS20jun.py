@@ -1374,7 +1374,6 @@ def processing(update: Update, context: CallbackContext) -> int:
             update.effective_message.reply_media_group(media=[InputMediaPhoto(usersGlobalVariables[str(update.callback_query.from_user.id)]["dishToRecommend"].immagine),InputMediaPhoto(open("./" + str(usersGlobalVariables[str(update.callback_query.from_user.id)]["dishToRecommend"].FSAlabel), 'rb'))])
             raccHealthierNome = 'But I also propose to you a healthier alternative: ' + mostSimAndHeal.nome  # BUT I PROPOSE YOU ALSO AN HEARTIER ALTERNATIVE
             update.effective_message.reply_text(raccHealthierNome, reply_markup=ReplyKeyboardRemove())
-            
             update.effective_message.reply_media_group([InputMediaPhoto(open(mostSimAndHeal.qualityImage,'rb')),InputMediaPhoto(open("./" + str(mostSimAndHeal.FSAlabel), 'rb'))])
             
             # [InputMediaPhoto(open(mostSimAndHeal.qualityImage,'rb'))]
